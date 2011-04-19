@@ -1,0 +1,15 @@
+export FREESURFER_HOME=/Applications/freesurfer
+
+export FSLOUTPUTTYPE NIFTI_GZ
+
+export SUBJECTS_DIR=/Volumes/MRI/anatomy/FREESURFER_SUBS/
+
+#source $FREESURFER_HOME/SetUpFreeSurfer.sh
+
+
+export PATH=$PATH:/opt/local/bin
+export EDITOR=nano
+
+#source ~/mne_2.6/setup/mne/mne_setup_analysis_sh
+source /Volumes/MRI/toolbox/MNESuite/mne_2.6_osx/setup/mne/mne_setup_analysis_sh
+

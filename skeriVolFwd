@@ -1,0 +1,23 @@
+#!/bin/bash
+
+source ~/.bashrc
+source ~/.bash_profile
+
+export SUBJECT=$1;
+REG=$2;
+ELEC=$3;
+FWDOUT=$4;
+SPHOUT=${FWDOUT%fwd.fif}sph-fwd.fif;
+
+if [ ! -e $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif ]
+then
+mne_volume_source_space --bem $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-bem.fif --grid 5 --mindist 5 --src $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif
+fi
+
+#before running set:
+#export SUBJECT=skeri0055_fs4
+
+mne_forward_solution --eeg --mricoord --eegscalp --origin 0:-20:10 --eegrad 110 --src $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif --trans $REG --meas $ELEC --fwd $SPHOUT --eegmodel default
+
+mne_forward_solution --eeg  --grad --src $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif  --bem $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-bem-sol.fif --trans $REG --meas $ELEC --fwd $FWDOUT --mricoord
+

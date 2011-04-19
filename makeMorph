@@ -1,0 +1,21 @@
+#!/bin/bash
+# THIS SCRIPT MAKES mne cross subject morphing maps
+
+
+nameL=( mni0001_fs4 `ls -d skeri????_fs4` );
+morphDir=$SUBJECTS_DIR/morph-maps
+
+for (( i = 0 ; i < ${#nameL[*]}; i++ ));do 
+for (( j = i+1 ; j < ${#nameL[*]}   ; j++ ));do 
+
+map2Make=$morphDir/${nameL[j]}-${nameL[i]}-morph.fif
+if [ -e "$map2Make" ]
+then
+  echo map exists: $map2Make
+  continue
+fi
+
+echo mne_make_morph_maps --to ${nameL[i]} --from ${nameL[j]}; 
+mne_make_morph_maps --to ${nameL[i]} --from ${nameL[j]}; 
+
+done;done
