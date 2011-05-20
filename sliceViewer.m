@@ -178,8 +178,17 @@ uicontrol(controlFigH,'position',[0.01 0.15 0.15 0.1],'style','text','string','A
 alphaCutoffSliderH = uicontrol(controlFigH,'position',[0.15 0.15 0.30 0.1],'style','slider','min',256,'max',512,'value',256,...
     'sliderstep',[.01 .10],'tag','sliderAlphaCutoff','callback',@setAlphaCutoff);
 
-alphaCutoffEditH   = uicontrol(controlFigH,'position',[0.46 0.16 0.08 0.121],'style','edit','string',alphaCutoff,'tag','editAlphaCutoff',...
+alphaCutoffEditH   = uicontrol(controlFigH,'position',[0.46 0.16 0.1 0.121],'style','edit','string',alphaCutoff,'tag','editAlphaCutoff',...
     'callback',@setAlphaCutoff,'foregroundcolor','w','backgroundcolor',BGcolor);
+
+uicontrol(controlFigH,'position',[0.46 0.3 0.3 0.121],'style','text','string','cutoff index:',...
+    'HorizontalAlignment','left','foregroundcolor','w','backgroundcolor',BGcolor);
+
+alphaRealValueH   = uicontrol(controlFigH,'position',[0.6 0.16 0.3 0.121],'style','text','string',0,'tag','alphaRealValue',...
+    'foregroundcolor','w','backgroundcolor',BGcolor);
+
+uicontrol(controlFigH,'position',[0.6 0.3 0.3 0.121],'style','text','string','cutoff value:',...
+    'foregroundcolor','w','backgroundcolor',BGcolor);
 
 
 % % % Inverse options
@@ -359,6 +368,9 @@ return
         updateSlice(i(2),2)
         updateSlice(i(3),3)
         
+        alphaRealValue = funcObj.alphaIdx2Real(round(alphaCutoff));
+        set(alphaRealValueH,'string',num2str(alphaRealValue));
+        
     end
 
 
@@ -450,7 +462,10 @@ return
         dataRange = dataMax-dataMin;
         
         funcObj.volData = (255*(funcObj.volData-dataMin)./dataRange)+256;
+        funcObj.alphaIdx2Real = [zeros(1,255) (0:255)*dataRange/255+dataMin];
         
+        alphaRealValue = funcObj.alphaIdx2Real(round(alphaCutoff));
+        set(alphaRealValueH,'string',num2str(alphaRealValue));
         
         updateSlice(i(1),1)
         updateSlice(i(2),2)
@@ -491,7 +506,7 @@ return
                 timelineH = line([funcObj.dataSeries.xTms(iT) funcObj.dataSeries.xTms(iT)],[yLo yHi],'linewidth',2,'buttondownFcn',@clickedWave);
                 
                 %Set up the function to call when the plots are clicked on
-                set(ax,'ButtonDownFcn',@clickedWave)
+                set(seriesAx,'ButtonDownFcn',@clickedWave)
                 set(wavePlotH,'ButtonDownFcn',@clickedWave)
                 set(timelineH,'ButtonDownFcn',@clickedWave)
                 
@@ -515,6 +530,9 @@ return
                 set(seriesAx,'ButtonDownFcn', @clickedSpec)
                 
         end
+        
+        set(seriesAx,'YCOLOR','w','XCOLOR','w')
+        
     end
 
     function clickedSpec(varargin)
@@ -569,6 +587,8 @@ return
             
             funcObj.volData = (255*(funcObj.volData-dataMin)/dataRange)+256;
 
+            
+            funcObj.alphaIdx2Real = [zeros(1,255) (0:255)*dataRange/255+dataMin];
 
             updateSlice(i(1),1)
             updateSlice(i(2),2)
@@ -584,7 +604,7 @@ return
 %         src
 %         event
         
-        choice = questdlg('Close all sliceViewer windows?','Close sliceViewer','Yes','No','Yes');
+        choice = questdlg('Close sliceViewer?','Close sliceViewer','Yes','No','Yes');
         
         switch choice
             case 'Yes'
