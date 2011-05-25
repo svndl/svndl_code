@@ -65,7 +65,32 @@ switch lower(mapName)
         colorLoc = [0 0 0;                    
                     1 1 1;];
         
+    case 'hotcortex'
 
+        colorVal = [.6 .6 .6; 
+            1 0 0;
+            1 1 0;];
+        
+        colorLoc = [0 0 0;
+                    .5 .5 .5;
+                    1 1 1;];
+
+        
+    case 'coolhotcortex'
+     
+        colorVal = [0 1 1; 
+                    0 0 1; 
+                    .6 .6 .6;
+                    1 0 0;
+                    1 1 0;];
+                
+        colorLoc = [0 0 0;
+                    .25 .25 .25;
+                    .5 .5 .5;
+                    .75 .75 .75;
+                    1 1 1;];
+    otherwise
+        error(['Sorry cannot find matching colormap named: ' mapName ])
 end
 
 

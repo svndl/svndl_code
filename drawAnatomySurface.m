@@ -75,6 +75,7 @@ switch lower(strippedName)
         surf2Render.rr = ctx.vertices;
         surf2Render.tris = ctx.faces;
         cortexLoaded = true;
+        p.surfReflectance = [.6 .3 0 2];
         tag = 'defaultCortex';
     otherwise
         error(['Invalid anatomical surface name: ' p.surfName])
@@ -125,10 +126,12 @@ handle = patch('Vertices',surf2Render.rr,'faces',surf2Render.tris(:,[3 2 1]), ..
 material(handle,p.surfReflectance);
 axis tight
 axis equal
+axis vis3d
 
 %Set id information
 set(handle,'tag',tag);
 set(gcf,'renderer','opengl');
+camproj('perspective')
 
 if ~isempty(p.patchOptions)
     set(handle,p.patchOptions{:});
@@ -136,7 +139,9 @@ end
 
 %Turn on a light if none are there
 if isempty(findobj(gcf,'type','light'))
-    camlight headlight;
+    light('position',[0 .707 .707],'style','infinite')
+    light('position',[0 -.707 .707],'style','infinite')
+    light('position',[0 0 -1],'style','local')
     lighting(ax,'phong');
 end
 

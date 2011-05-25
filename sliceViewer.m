@@ -35,7 +35,8 @@ alphaCutoff = 256;
 depthGamma = 1;
 depthLimit = inf;
 doSnrWeight = false;
- funcObj.depthWeight = funcObj.initDepthWeight;
+freezeColormap = false;
+funcObj.depthWeight = funcObj.initDepthWeight;
  
 
 boxColor = [0.5 0.5 0.5];
@@ -195,7 +196,7 @@ uicontrol(controlFigH,'position',[0.6 0.3 0.3 0.121],'style','text','string','cu
 depthWeightCheckboxH = uicontrol(controlFigH,'position',[0.56 0.88 0.2 0.1],'style','checkbox', ...
     'string','Apply Depth Weighting','callback',@depthCheckbox,'foregroundcolor','w');
     
-uicontrol(controlFigH,'position',[0.76 0.88 0.08 0.1],'style','text',...
+uicontrol(controlFigH,'position',[0.76 0.88 0.08 0.13],'style','text',...
     'string','Depth Exponent','foregroundcolor','w','backgroundcolor',BGcolor);
 
 depthWeightEditH = uicontrol(controlFigH,'position',[0.85 0.89 0.08 0.12], ...
@@ -205,6 +206,8 @@ depthWeightEditH = uicontrol(controlFigH,'position',[0.85 0.89 0.08 0.12], ...
 snrCheckboxH = uicontrol(controlFigH,'position',[0.56 0.78 0.2 0.1],'style','checkbox', ...
     'string','Show SNR','callback',@snrCheckbox,'foregroundcolor','w');
 
+colormapCheckboxH = uicontrol(controlFigH,'position',[0.56 0.65 0.2 0.12],'style','checkbox', ...
+    'string','Freeze Colormap','callback',@colormapCheckbox,'foregroundcolor','w');
 
 % % FIDUCIAL CONTROLS
 % uicontrol('position',[0.55 0.20 0.05 0.05],'style','text','string','LA','backgroundcolor',BGcolor,'foregroundcolor',FGcolor)
@@ -418,6 +421,16 @@ return
         
     end
 
+    function colormapCheckbox(H,varargin)
+        
+        freezeColormap = get(H,'value');
+        
+        if ~freezeColormap
+            updateInverse;
+        end
+        
+    end
+
     function updateInverse()
         
         funcObj.inverse = bsxfun(@times,funcObj.depthWeight,origInverse);
@@ -457,12 +470,15 @@ return
         plotDataSeries(seriesAx)
         %rerange source data for colormap
         
-        dataMin = min(funcObj.volData(:));
-        dataMax = max(funcObj.volData(:));
+        if ~freezeColormap
+            dataMin = min(funcObj.volData(:));
+            dataMax = max(funcObj.volData(:));
+        end
+        
         dataRange = dataMax-dataMin;
         
         funcObj.volData = (255*(funcObj.volData-dataMin)./dataRange)+256;
-        funcObj.alphaIdx2Real = [zeros(1,255) (0:255)*dataRange/255+dataMin];
+        funcObj.alphaIdx2Real = [zeros(1,255) ((0:255)*dataRange/255)+dataMin];
         
         alphaRealValue = funcObj.alphaIdx2Real(round(alphaCutoff));
         set(alphaRealValueH,'string',num2str(alphaRealValue));
@@ -580,9 +596,11 @@ return
             
             
             %rerange source data for colormap
+            if ~freezeColormap
+                dataMin = min(funcObj.volData(:));
+                dataMax = max(funcObj.volData(:));
+            end
             
-            dataMin = min(funcObj.volData(:));
-            dataMax = max(funcObj.volData(:));
             dataRange = dataMax-dataMin;
             
             funcObj.volData = (255*(funcObj.volData-dataMin)/dataRange)+256;
