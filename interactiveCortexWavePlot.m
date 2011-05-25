@@ -55,8 +55,13 @@ hold on;
 colorbar('peer',cortexAx)
 
 foldedVertices = get(ctxH,'Vertices');
-inflatedCtx = readInflatedCortex(subjId);
-inflatedVertices  = inflatedCtx.vertices;
+try 
+    inflatedCtx = readInflatedCortex(subjId);
+    inflatedVertices  = inflatedCtx.vertices;
+catch
+    warning(['Cannot find inflated cortex for subject: ' subjId]);
+end
+
 ctxVerts = foldedVertices;
 
 markH = plot3(ctxVerts(iVert,1),ctxVerts(iVert,2),ctxVerts(iVert,3),'ko','markersize',10,'linewidth',2);
