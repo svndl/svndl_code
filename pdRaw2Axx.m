@@ -1,4 +1,4 @@
-function pdOdd2Axx(projectInfo,optns)
+function pdRaw2Axx(projectInfo,optns)
 %function pdOdd2Eeglab(projectInfo)
 %
 %Function to take powerdiva raw data and read it into EEGlab.
@@ -58,19 +58,11 @@ end
 
 %optns.cndNumOffset
 
+condAndTrialNum = sscanf([allRaw.name],'Raw_c%d_t%d.mat');
 
- if ~isfield(optns,'cndNum2Sort') && isempty(optns.cndNum2Sort)
-     
-     
-     condAndTrialNum = sscanf([allRaw.name],'Raw_c%d_t%d.mat');
-     
-     %Finds unique condition numbers in the export directory.
-     condNum = unique(condAndTrialNum(1:2:end))';
- else
-     condNum = optns.cndNum2Sort;
- end
- 
- 
+%Finds unique condition numbers in the export directory.
+condNum = unique(condAndTrialNum(1:2:end))';
+
 
 % Axx fields to fake:
 % 
@@ -135,28 +127,6 @@ for iCond = condNum,
     for iTrial = 1:size(goodTrials,1),        
         %if channel for this trial is ~good set to NaN
         dat{1}(:,iTrial,~goodTrials(iTrial,:)) = NaN;
-    end
-    
-    
-    if isfield(optns,'baselineTime') && ~isempty(optns.baselineTime)
-    
-        
-        baselineSamples = round(optns.baselineTime{iCond}*condInfo{1}.FreqHz/1000);
-        
-        %make sure we are in range
-        if max(baselineSamples)>Axx.nT || min(baselineSamples)<0
-            error('Baseline incorrectly specified, values out of range')
-        end
-        
-        baseline = baselineSamples(1):baselineSamples(2);
-        
-        
-        
-        baselineDat = mean(dat{1}(baseline,:,:),1);
-        
-        dat{1} = bsxfun(@minus,dat{1},baselineDat);
-        
-        
     end
     
     
