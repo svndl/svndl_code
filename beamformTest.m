@@ -8,6 +8,7 @@ mrcDir = '/Volumes/MRI/data/4D2/SEP/mrcProj';
 mrcDir = '/Volumes/MRI/data/4D2/JMA_PROJECTS/chopstix/chopstixMRC/';
 mrcDir = '/Volumes/MRI/data/4D2/CPT/resolutionSimulations/';
 mrcDir = '/Volumes/MRI/data/4D2/JMA_PROJECTS/c1v1flip/mrcProj';
+mrcDir = '/Volumes/Denali_4D2/4D2/JMA_PROJECTS/c1v1flip/mrcProj';
 
 
 subjId = 'skeri0037';
@@ -53,10 +54,13 @@ sourceIdx = [2001 3000];
 %sourceIdx = [7 8 ];
 sourceIdx = [5 10];
 
-mtI = find(strncmp('MT',{roiList.name},2));
-v3aI = find(strncmp('V3A',{roiList.name},3));
+mtIL = find(strncmp('MT-L',{roiList.name},4));
+v3aIL = find(strncmp('V3A-L',{roiList.name},5));
 
-sourceIdx = [mtI v3aI];
+mtIR = find(strncmp('MT-R',{roiList.name},4));
+v3aIR = find(strncmp('V3A-R',{roiList.name},5));
+
+sourceIdx = [mtIL mtIR v3aIL v3aIR];
 
 noiseLevel = 300;
 
@@ -598,9 +602,10 @@ end
 
 D = -speye(size(conMat)) + conMatNrm;
 
+tstA = sum(Asim(:,sourceIdx),2);
 %% l1_ls
 
-
+lambda2=1;
 nT = size(tstA,2);
 
 B = sparse([repmat(Anrm,1,1); lambda2*D]);
@@ -610,15 +615,23 @@ y = real([tstA(:); zeros(length(D),1)]);
 % B = sparse(blkdiag(Anrm,Anrm));
 % y = real(tstA(:));
 
-size(y)
-size(B)
+
+% lam_max =  norm(2*tstA,inf);
+% lambda = lam_max*.001; % regularization parameter
+% lambda2 = .001*lambda;
+% size(y)
+% size(B)
 
 
 lam_max =  norm(2*(B'*y),inf);
 lambda = lam_max*.1;
-lambda2 = 10*lambda;
+lambda2 = .010*lambda;
 lambda./lam_max
 lambda2./lam_max
+% 
+B = sparse([repmat(Anrm,1,1); lambda2*D]);
+
+y = real([tstA(:); zeros(length(D),1)]);
 
 [xl1ls,status] = l1_ls(B,y,lambda,5e-2);
 

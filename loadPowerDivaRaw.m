@@ -45,8 +45,9 @@ searchString = sprintf('Raw_c%.3i*',conditionNum);
 fileList = dir(fullfile(directory,searchString));
 
 if length(fileList)==0,
-    
-    error('No such files found')
+    disp('!!!!!!!!!!!!!!!!!!!!!')
+    disp('Error opening projcect')
+    error('No RAW files found')
 end
 
 

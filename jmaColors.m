@@ -89,6 +89,17 @@ switch lower(mapName)
                     .5 .5 .5;
                     .75 .75 .75;
                     1 1 1;];
+
+    case 'pval'
+
+        colorVal = [...
+            1 1 0;
+            1 0 0;];
+            
+        
+        colorLoc = [0 0 0; 
+                    1 1 1;];
+
     otherwise
         error(['Sorry cannot find matching colormap named: ' mapName ])
 end

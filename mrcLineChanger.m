@@ -1,10 +1,11 @@
 %%
 colorChoice = 'k';
 
-baseTs =220:432;
+baseTs =606:648;220:432;
 spacing = 5;
+nPlots = 2;
 offList = [0 0 0 0 0];
-offList = [0:spacing:50];%0:spacing:50] ;
+%offList = [0:spacing:nPlots*spacing; 0:spacing:nPlots*spacing] ;
 offList = offList(:);
 
 %lh = findobj(gcf,'type','line','color',colorChoice,'linewidth',2)

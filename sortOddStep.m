@@ -26,6 +26,16 @@ for iCnd=condList,
     [condData] = loadPowerDivaRaw(dataDir,iCnd);
     idx = 1;
     nOdd = 0;
+    
+    if ~isfield(condData{1},'OddStepData')
+        disp('!!!!!!!!!!!!!!!!!!')
+        disp('');
+        disp('Cannot find Odd Step Trial information in export')
+        disp('Are you sure this is a correctly exported odd step project?')
+       
+        error('alesToolbox:sortOddStep:oddStepMissing','Error: Missing ODDSTEP task data');
+    end
+    
     for i=1:length(condData)
         nOdd =nOdd+sum(condData{i}.OddStepData(:,1));
     end
