@@ -69,10 +69,17 @@ for iSubj = 3:length(subjectList),
         continue;
     end
 
-    disp(['Processing subject: ' subjId ])
     
     
     PDname = dir(fullfile(projectDir,subjId,'Exp_MATL_*'));
+
+    if isempty(PDname)
+        display(['---SKIPPING: ' subjId ' ---- Cannot find PowerDiva export directory.'])
+       continue     
+    end
+    
+    disp(['Processing subject: ' subjId ])
+    
     powerDivaExportDir = fullfile(projectDir,subjId,PDname(1).name);
 
     projectInfo.projectDir = projectDir;
