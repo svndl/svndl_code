@@ -456,7 +456,7 @@ handles.data.subjectWeighting = ones(handles.data.nSubjects,1,1,handles.data.nCh
 switch lower(str{val});
 
     case 'equal' % User selected equal subject weighting.
-        handles.data.subjectWeighting = ones(handles.data.nSubjects,1,1,handles.data.nCh)./handles.data.nSubjects;
+        handles.data.subjectWeighting = ones(handles.data.nSubjects,1,1,handles.data.nCh);
     case 'noise variance' % User selected weighting by noise level.
         
         for iCh=1:handles.data.nCh,
@@ -469,7 +469,7 @@ switch lower(str{val});
         
         
     case 'snr' % User selected weighting based on SNR.
-         handles.data.subjectWeighting = ones(handles.data.nSubjects,1,1,handles.data.nCh)./handles.data.nSubjects;
+         handles.data.subjectWeighting = ones(handles.data.nSubjects,1,1,handles.data.nCh);
          
          
          %Check if SNR should be calculated in the frequency or time domain
@@ -536,12 +536,12 @@ allSubjList = get(handles.subjectListbox,'String');
 
 handles.data.nSubjects = length(subjList);
 
-handles.data.subjectScaling = ones(handles.data.nSubjects,1,1,1);
+handles.data.subjectScaling = ones(handles.data.nSubjects,1,1,1)./handles.data.nSubjects;
 
 switch lower(str{val});
 
     case 'unity' % User selected equal subject weighting.
-        handles.data.subjectScaling = ones(handles.data.nSubjects,1,1,1);
+        handles.data.subjectScaling = ones(handles.data.nSubjects,1,1,1)./handles.data.nSubjects;
     case 'signal amplitude' % User selected weighting by noise level.
          
          %Check if SNR should be calculated in the frequency or time domain
@@ -622,6 +622,7 @@ end
 handles.data.wgtWave = squeeze(nansum(weightedWave,1));
 handles.data.wgtAmp  = squeeze(nansum(weightedAmp,1));
 handles.data.wgtSpec = squeeze(nansum(weightedSpec,1));
+
 
 
 %If there is only 1 condition, squeezing things makes the cond dim go away

@@ -39,6 +39,15 @@ if ~isempty(headshape)
     headshape = headshape(sqrt(D)<(sf*30),:);
 end
 
+if ~isempty(electrodes)
+    [K,D] =     nearpoints(electrodes', stationaryPoints');
+    %throw out points farther than 3 cm from scalp
+    npointsRem = sum(full(sqrt(D)>(30*sf)));
+    disp([num2str(npointsRem) ' removed because they are further than 3 cm from inital scalp']); 
+    electrodes = electrodes(sqrt(D)<(sf*30),:);
+end
+
+
 % stationaryCenter = mean(stationaryPoints);
 % movableCenter    = mean(movablePoints);
 
@@ -116,7 +125,7 @@ rotationMtx = makeRotMtx(params);
 signedDist = dot(  (movedElec - stationaryPoints(kE,:))', N(:,kE));
 mean(signedDist)
 
-elec2plot = 1:128;[17 75];
+elec2plot = 1:size(electrodes,1); 1:128;[17 75];
 
 CI = nlparci(X,RESIDUAL,'jacobian',.5*JACOBIAN)
 nP=10;
