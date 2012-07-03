@@ -39,6 +39,17 @@ switch lower(mapName)
         colorLoc = [0 0 0;
                     .5 .5 .5;
                     1 1 1;];
+
+    case 'italy'
+     
+        colorVal = [0 .5 0;
+                    1 1 1;
+                    1 0 0;];
+                
+        colorLoc = [0 0 0;
+                    .5 .5 .5;
+                    1 1 1;];
+                
     case 'usc'
 
         colorVal = [ 150 0 0; ...
