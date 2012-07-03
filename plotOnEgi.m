@@ -15,10 +15,23 @@ if datSz(1)<datSz(2)
     data = data';
 end
 
+if size(data,1) == 128
 tEpos = load('defaultFlatNet.mat');
 tEpos = [ tEpos.xy, zeros(128,1) ];
 
 tEGIfaces = mrC_EGInetFaces( false );
+
+nChan = 128;
+elseif size(data,1) == 256
+    
+tEpos = load('defaultFlatNet256.mat');
+tEpos = [ tEpos.xy, zeros(256,1) ];
+
+tEGIfaces = mrC_EGInetFaces256( false );
+nChan = 256;
+else
+    error('Only good for 2 montages: Must input a 128 or 256 vector')
+end
 
 
 patchList = findobj(gca,'type','patch');
@@ -26,7 +39,7 @@ netList   = findobj(patchList,'UserData','plotOnEgi');
 
 
 if isempty(netList),    
-    handle = patch( 'Vertices', [ tEpos(1:128,1:2), zeros(128,1) ], ...
+    handle = patch( 'Vertices', [ tEpos(1:nChan,1:2), zeros(nChan,1) ], ...
         'Faces', tEGIfaces,'EdgeColor', [ 0.25 0.25 0.25 ], ...
         'FaceColor', 'interp');
 else

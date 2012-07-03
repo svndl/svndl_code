@@ -116,6 +116,7 @@ nSegs = length(allRTSeg);
              end
              
              
+             
              eventTiming(:,2) = thisCondDuration;
              %Code condition number in event
              eventTiming(:,3) = thisCondNmb;
@@ -145,6 +146,31 @@ nSegs = length(allRTSeg);
              fsOutput(:,4) = 1;
       
              save(fullOutputFile,'-ascii','fsOutput');
+         end
+         
+         if strcmp(optns.outputFormat,'vista')
+             outputFilename = sprintf('RTSegTime_vista_s%.3d.par',iSeg);
+             fullOutputFile = fullfile(outputDir,outputFilename);
+             
+             vistaOutput = zeros(size(allConditionTiming,1)*2,2);
+             
+             idx=1;
+             for iTrial = 1:2:size(vistaOutput,1),
+             
+                 vistaOutput(iTrial,1) = allConditionTiming(idx,1);
+                 vistaOutput(iTrial+1,1) = allConditionTiming(idx,1)+allConditionTiming(idx,2);
+
+                 vistaOutput(iTrial,2)= allConditionTiming(idx,3);
+                 vistaOutput(iTrial+1,2) = 0;
+                 idx=idx+1;
+             end
+             
+             [tmp,ndx] = sort( vistaOutput(:,1) );
+             vistaOutput(:,1) = vistaOutput(ndx,1);
+             vistaOutput(:,2) = vistaOutput(ndx,2);             
+
+             
+             save(fullOutputFile,'-ascii','-tabs','vistaOutput');
          end
          
      

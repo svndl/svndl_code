@@ -1,4 +1,4 @@
-function [roiInfo leftVerts rightVerts leftSizes rightSizes] = getRoiVertList(roiDir,type)
+function [roiInfo leftVerts rightVerts leftSizes rightSizes] = getRoisByType(roiDir,type)
 %function [roiInfo] = getRoisByType(roiDir,type)
 %function [chunker] = createChunkerFromMeshRoi(roiDir,nTotalVert)
 %The chunker matrix maps the full(~128 x nTotalVert) forward/inverse matrix

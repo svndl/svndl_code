@@ -106,7 +106,7 @@ else
 
     n = regexp(freesurfDir(1:end-1),[filesep '*' ],'start')
 
-    anatDir = freesurfDit(1:n(end));
+    anatDir = freesurfDir(1:n(end));
 
     disp('My guess is: %s', anatDir);
 
