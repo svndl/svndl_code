@@ -37,6 +37,7 @@ if ~isempty(s) && ischar(s)
 end
 Options.Color = get(gca, 'ColorOrder');
 Options.PatchColor = brighten(Options.Color,.97);
+
 if nargin > 3
     Options = mergestructs(Options,struct(varargin{:}));
 % Options.Color=varargin{1}.;

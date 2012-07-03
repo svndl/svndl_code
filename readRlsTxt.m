@@ -1,12 +1,5 @@
 function [data] = readRlsTxt(projectInfo,optns)
 
-choices = { 'xF1' '1'; ...
-            'iCh' 'ALL'; ...
-            'iTrial' '0'; ...
-            };
-    
-        
-data2Keep = { 'iCh' 'xF1' 'iBin' 'Sr' 'Si' 'Signal' 'StdErr' 'Noise'};
 
 outputDir = projectInfo.powerDivaExportDir;
 
@@ -69,51 +62,9 @@ for iCond = condNum,
 
  disp( ['Loading condition: ' num2str(iCond) ' from file: ' allRls(iCond).name]);
         
-allData = importdata(allRls(iCond).name);
+thisFilename = fullfile(projectInfo.powerDivaExportDir,allRls(iCond).name);
+[data(iCond) header1] = importRlsTxt(thisFilename);
 
-
-selectRow = ones(size(allData.textdata,1),1);
-
-for iSelect = 1:size(choices,1),
-
-    selectCol = strcmp(choices(iSelect,1),allData.textdata(1,:));
-    
-    
-    if strcmp(choices(iSelect,1),'iCh')
-        if strcmp(choices(iSelect,2),'ALL')
-            selectRow = selectRow.*ones(size(allData.textdata,1),1);
-            continue;
-        end
-    end
-    
-    selectRow = selectRow.*strcmp(choices(iSelect,2),allData.textdata(:,selectCol));
-
-        
-end
-
-
-selectData = allData.textdata(selectRow>0,:);
-
-thisFileData = [];
-
-for iData = 1:length(data2Keep),
-
-    selectCol = strcmp(data2Keep(iData),allData.textdata(1,:));
-    
-    if strcmp(data2Keep(iData),'iCh')
-        for thisRow = 1:size(selectData,1),
-            thisFileData(thisRow,iData)=str2double(selectData{thisRow,selectCol}(3:5));
-        end
-    else
-    thisFileData(:,iData) = str2double(selectData(:,selectCol));
-    
-    end
-    
-    
-end
-
-
-data{iCond} = thisFileData;
 
 
 
