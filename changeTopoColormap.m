@@ -37,9 +37,9 @@ for patchHandle = patchList';
     
     set(thisAx,'CLim',thisRange)
     set(thisAx,'visible','off')
-    set(patchHandle,'LineWidth',2)
+    set(patchHandle,'LineWidth',1)
     set(patchHandle,'marker','.')
-    set(patchHandle,'markersize',25)
+    set(patchHandle,'markersize',10)
     cbarH = colorbar('peer',thisAx);
     set(cbarH,'fontname','helvetica')
     set(cbarH,'fontsize',18)

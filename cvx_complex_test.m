@@ -2,13 +2,13 @@
 
 %Complex case
 
-nSensors = 100;
-nSources = 800;
+nSensors = 10;
+nSources = 80;
 nMeasurements = 10;
 
 %Mixing matrix
-%M = randn(nSensors,nSources);
-M=Achunk(1:nSensors,1:nSources);
+M = randn(nSensors,nSources);
+%M=Achunk(1:nSensors,1:nSources);
 
 
 %Simulated Source Coeff.

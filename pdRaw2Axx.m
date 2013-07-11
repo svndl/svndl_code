@@ -58,10 +58,17 @@ end
 
 %optns.cndNumOffset
 
-condAndTrialNum = sscanf([allRaw.name],'Raw_c%d_t%d.mat');
-
-%Finds unique condition numbers in the export directory.
-condNum = unique(condAndTrialNum(1:2:end))';
+ if ~isfield(optns,'cndNum2Sort') || isempty(optns.cndNum2Sort)
+     
+     
+     condAndTrialNum = sscanf([allRaw.name],'Raw_c%d_t%d.mat');
+     
+     %Finds unique condition numbers in the export directory.
+     condNum = unique(condAndTrialNum(1:2:end))';
+ else
+     condNum = optns.cndNum2Sort;
+ end
+ 
 
 
 % Axx fields to fake:
@@ -102,7 +109,8 @@ for iCond = condNum,
     clear dat paddedDat shiftedDat;
 
     
-    [dat respTime condInfo] = sortOddStep(projectInfo.powerDivaExportDir,optns,iCond);
+%    [dat respTime condInfo] = sortOddStep(projectInfo.powerDivaExportDir,optns,iCond);
+     [dat condInfo] = sortEpoch(projectInfo.powerDivaExportDir,optns,iCond);
   
     
     

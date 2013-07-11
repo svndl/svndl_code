@@ -1,4 +1,4 @@
-function [ H ] = plotContourOnScalp( data, subjId, mrcProjDir,cMapRange,myColormap )
+function [ H ex] = plotContourOnScalp( data, subjId, mrcProjDir,cMapRange,myColormap )
 %plotContourOnScalp Plot's contour maps on a realistic scalp surface.
 %function [ H ] = plotContourOnScalp( data, subjId, mrcProjDir,cMapRange )
 %   Detailed explanation goes here

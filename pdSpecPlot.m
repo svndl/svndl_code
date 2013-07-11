@@ -7,6 +7,14 @@ nFreqs = length(freqs);
 barcolor = 'r';
 plotErrorBar = false;
 
+%Makre sure data is a 1xn vector. 
+amps = squeeze(amps);
+dataSz = size(amps);
+if dataSz(2)<dataSz(1)
+    amps = amps';
+end
+
+
 if ~isempty(varargin)
     
     for iArg = 1:2:length(varargin)

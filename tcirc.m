@@ -1,6 +1,24 @@
-function [pVal stdErr pT2 pChi] = tcirc(complexVector)
+function [pVal stdDev pT2 pChi] = tcirc(complexVector)
+% tcirc - Calculate the Test statistic from Victor and Mast
+%function [pVal stdErr pT2 pChi] = tcirc(complexVector)
+%
+%Input:
+%compexVector: A vector of complex coefficients
+%
+%Output:
+%pVal:   Tcirc calculated pVal
+%stdDev: Tcirc estimate of circular standard deviation. Pooled over
+%        real/imag and assuming zero covariance.
+%pT2:    Hotelling T2 calculated pVal. This allows covariance. Has less
+%        power than tCirc.
+%
+%(the following output are not to be used) 
+%pChi: Don't use this!. This is a chi^2 approximate of the F table for the
+%      T2. Implemented purely for internal diagnostics
+%
+%
 
-
+%JMA
 if isreal(complexVector)
 	error('Vector Not Complex!')
 end
@@ -25,27 +43,31 @@ T2Circ = (Vgroup/Vindiv);
 
 pVal = 1-fcdf(T2Circ,2,2*M-2);
 
-stdErr = sqrt(Vindiv);
+stdDev = sqrt(Vindiv);
 
 
-
-% realMatrix = [real(complexVector) imag(complexVector)];
+%Should we return Hotelling values that don't assume equal variance.
+if nargout>2
+    
+ realMatrix = [real(complexVector) imag(complexVector)];
 % 
-% [n,p]=size(realMatrix);
+[n,p]=size(realMatrix);
 % 
-% m=mean(realMatrix,1); %Mean vector from data matrix X.
-% %S=cov(realMatrix);  %Covariance matrix from data matrix X.
+m=mean(realMatrix,1); %Mean vector from data matrix X.
+S=cov(realMatrix);  %Covariance matrix from data matrix X.
 % S=eye(p)*Vindiv;
-% T2=n*(m)*inv(S)*(m)'; %Hotelling's T-Squared statistic.
-% F=(n-p)/((n-1)*p)*T2;
-% v1=p;  %Numerator degrees of freedom.
+T2=n*(m)*inv(S)*(m)'; %Hotelling's T-Squared statistic.
+F=(n-p)/((n-1)*p)*T2;
+
+v1=p;  %Numerator degrees of freedom. 
+v2=n-p;  %Denominator degrees of freedom.
+%Probability that null Ho: is true. Test using F distribution
+pT2=1-fcdf(F,v1,v2);  
 % 
-% v2=n-p;  %Denominator degrees of freedom.
-% pT2=1-fcdf(F,v1,v2);  %Probability that null Ho: is true.
 % 
-% 
-% v=p; %Degrees of freedom.
-% pChi=1-chi2cdf(T2,v);
-% % 
-% % [T2Circ F]
-% % [2*M-2 v2]
+%Probability that null Ho: is true. Test using Chi^2 distribution
+v=p; %Degrees of freedom.
+pChi=1-chi2cdf(T2,v);
+
+
+end

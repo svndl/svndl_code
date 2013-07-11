@@ -3,11 +3,15 @@ function [cmap] = jmaColors(mapName,thresh,nPoints);
 %
 %possible map names:
 %
-%arizona   = Blue to Red with white in the middle
-%Air force = dark blue to white
-%USC       = Cardinal to Gold
-%Cal       = Blue to Yellow
-%Nebraska  = White to Red;
+%'arizona'       = Blue to Red with white in the middle
+%'Air force'     = dark blue to white
+%'USC'           = Cardinal to Gold
+%'Cal'           = Blue to Yellow
+%'Nebraska'      = White to Red;
+%'italy'         = Green to White to Red             
+%'hotcortex'     = gray to red to yellow
+%'coolhotcortex' = cyan to blue to gray to red to yellow
+%'pval'          = yellow to red
 
 if ~exist('nPoints','var') || isempty(nPoints),
     
@@ -30,7 +34,7 @@ switch lower(mapName)
             1 1 1];
     
 
-    case 'arizona'
+    case {'arizona', 'usa'}
      
         colorVal = [0 0 1;
                     1 1 1;
@@ -39,6 +43,18 @@ switch lower(mapName)
         colorLoc = [0 0 0;
                     .5 .5 .5;
                     1 1 1;];
+    
+                
+    case  'usadarkblue'
+     
+        colorVal = [.2 .27 .67;
+                    1 1 1;
+                    1 0 .094;];
+                
+        colorLoc = [0 0 0;
+                    .5 .5 .5;
+                    1 1 1;];
+                
 
     case 'italy'
      

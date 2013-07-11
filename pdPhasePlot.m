@@ -26,10 +26,10 @@ for iDat = 1:length(phasorData),
     lH = line([0 real(phasorData(iDat))],[0 imag(phasorData(iDat))],'color',thisCol);
 
 
-    [cH fH] = circle(real(phasorData(iDat)),imag(phasorData(iDat)),noiseEst(iDat),thisCol,thisCol);
+%    [cH fH] = circle(real(phasorData(iDat)),imag(phasorData(iDat)),noiseEst(iDat),thisCol,thisCol);
 
-    set(fH,'facealpha',.25)
-    set(cH,'linewidth',2);
+%    set(fH,'facealpha',.25)
+%    set(cH,'linewidth',2);
     set(lH,'linewidth',3);
 
     %patch( tXE, tYE, tColorOrderMat( iCmp, : ), 'facealpha', .25, 'edgecolor', tColorOrderMat( iCmp, : ), 'linewidth', 2 );
@@ -47,6 +47,7 @@ axis equal;
 maxComp = max(abs(axis));
 
 rmax = maxComp*1.1;
+rmax = ceil(10*rmax)/10;
 rmin = 0;
 rticks = 3;
 tc = 'k';
@@ -117,10 +118,10 @@ for iDat = 1:length(phasorData),
     lH = line([0 real(phasorData(iDat))],[0 imag(phasorData(iDat))],'color',thisCol);
 
 
-    [cH fH] = circle(real(phasorData(iDat)),imag(phasorData(iDat)),noiseEst(iDat),thisCol,thisCol);
-
-    set(fH,'facealpha',.25)
-    set(cH,'linewidth',2);
+%     [cH fH] = circle(real(phasorData(iDat)),imag(phasorData(iDat)),noiseEst(iDat),thisCol,thisCol);
+% 
+%     set(fH,'facealpha',.25)
+%     set(cH,'linewidth',2);
     set(lH,'linewidth',2);
 
     %patch( tXE, tYE, tColorOrderMat( iCmp, : ), 'facealpha', .25, 'edgecolor', tColorOrderMat( iCmp, : ), 'linewidth', 2 );

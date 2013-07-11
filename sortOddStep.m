@@ -66,6 +66,7 @@ for iCnd=condList,
         hitTrials  = paddedOddStepData(:,1) & paddedOddStepData(:,2);
         missTrials = paddedOddStepData(:,1) & ~paddedOddStepData(:,2);
         faTrials   = ~paddedOddStepData(:,1) & paddedOddStepData(:,2);
+        
         crTrials   = ~paddedOddStepData(:,1) & ~paddedOddStepData(:,2);
 
         %discard prelude and postlude bins from counting for CR
@@ -209,6 +210,14 @@ for iCnd=condList,
             case {'cr', 'correct reject', 'correct rejects'}
                 trialsToReturn = find(allTrialResponseLabel==4);
                 usePreOddPost = true;
+                
+            otherwise
+              disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                warning('UNRECOGNIZED VALUE IN optns.selectByResponse DEFAULTING TO ALLODD')
+                disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            
+                trialsToReturn = allOddTrials;
+                usePreOddPost = true;
 
         end
 
@@ -217,6 +226,9 @@ for iCnd=condList,
 
     else % All oddstep trials unsorted by subject response.
 
+        disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        warning('optns.selectByResponse EMPTY DEFAULTING TO ALLODD')
+        disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         trialsToReturn = allOddTrials;
         usePreOddPost = true;
 

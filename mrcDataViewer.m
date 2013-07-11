@@ -139,9 +139,9 @@ for iSubj = 1:length(dirNames)
         
         data.trialsPerCond(iSubj,iCond) = thisCondData.nTrl;
         data.Spec(iSubj,iCond,:,:) = complex(thisCondData.Cos,thisCondData.Sin);
-        %data.Wave(iSubj,iCond,:,:) = thisCondData.Wave;
+        data.Wave(iSubj,iCond,:,:) = thisCondData.Wave;
         %Quick and Dirty DC offset removal, should make this an option.
-        data.Wave(iSubj,iCond,:,:) = bsxfun(@minus,thisCondData.Wave,mean(thisCondData.Wave,1));
+        %data.Wave(iSubj,iCond,:,:) = bsxfun(@minus,thisCondData.Wave,mean(thisCondData.Wave,1));
         data.Cov(iSubj,iCond,:,:) = thisCondData.Cov;
         
         

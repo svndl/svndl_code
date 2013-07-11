@@ -40,16 +40,18 @@ netList   = findobj(patchList,'UserData','plotOnEgi');
 
 if isempty(netList),    
     handle = patch( 'Vertices', [ tEpos(1:nChan,1:2), zeros(nChan,1) ], ...
-        'Faces', tEGIfaces,'EdgeColor', [ 0.25 0.25 0.25 ], ...
+        'Faces', tEGIfaces,'EdgeColor', [ 0.5 0.5 0.5 ], ...
         'FaceColor', 'interp');
+    axis equal;
+    axis off;
 else
     handle = netList;
 end
 
-set(handle,'facevertexCdata',data);
+set(handle,'facevertexCdata',data,'linewidth',1,'markersize',20,'marker','.');
 set(handle,'userdata','plotOnEgi');
 
-colormap(jmaColors('arizona'));
+colormap(jmaColors('usadarkblue'));
 
 if nargout >= 1
 varargout{1} = handle;

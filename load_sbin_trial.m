@@ -1,4 +1,4 @@
-function [trialData stimStart trialEvent] = load_sbin_condition(filename,conditionCode,nSampsPre,nSampsPost,event)
+function [trialData stimStart trialEvent] = load_sbin_trial(filename,conditionCode,nSampsPre,nSampsPost,event)
 
 if ~exist('event','var') || isempty(event)
     [event.code, segHdr, event.data] = read_sbin_events(filename);
@@ -8,7 +8,7 @@ end
 [header] = ft_read_header(filename);
 
 condIdx = strmatch(conditionCode,event.code);
-din4Idx = strmatch('DIN4',event.code);
+din4Idx = strmatch('DIN7',event.code);
 
 nEvents = length(event.code);
 

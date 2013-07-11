@@ -59,7 +59,7 @@ end
 %optns.cndNumOffset
 
 
- if ~isfield(optns,'cndNum2Sort') && isempty(optns.cndNum2Sort)
+ if ~isfield(optns,'cndNum2Sort') || isempty(optns.cndNum2Sort)
      
      
      condAndTrialNum = sscanf([allRaw.name],'Raw_c%d_t%d.mat');

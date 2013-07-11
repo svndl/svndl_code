@@ -1,4 +1,4 @@
-function pdRaw2Eeglab(projectInfo)
+function pdRaw2Eeglab(projectInfo,optns)
 %function pdRaw2Eeglab(projectInfo)
 %
 %Function to take pdRaw data and read it into EEGlab.

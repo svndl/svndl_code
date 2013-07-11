@@ -1,4 +1,4 @@
-function [data header] = importRlsTxt(filename)
+edifunction [data header] = importRlsTxt(filename)
 
 %List of fields to read.
 fieldList = {'Sr','Si','N1r', 'N1i', 'N2r','N2i',...
@@ -44,7 +44,7 @@ hdrFields = {
 
 fid = fopen(filename);
 
-if isempty(fid)
+if fid==-1
     error(['Cannot open file: ' filename]);
 end
 

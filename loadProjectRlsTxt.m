@@ -1,4 +1,4 @@
-function [data] = readRlsTxt(projectInfo,optns)
+function [data] = loadProjectRlsTxt(projectInfo,optns)
 
 
 outputDir = projectInfo.powerDivaExportDir;
@@ -63,7 +63,7 @@ for iCond = condNum,
  disp( ['Loading condition: ' num2str(iCond) ' from file: ' allRls(iCond).name]);
         
 thisFilename = fullfile(projectInfo.powerDivaExportDir,allRls(iCond).name);
-[data(iCond) header1] = importRlsTxtWithNoMissingData(thisFilename);
+[data{iCond} header1] = importRlsTxtWithNoMissingData(thisFilename);
 
 
 

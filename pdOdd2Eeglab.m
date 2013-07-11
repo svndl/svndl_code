@@ -1,4 +1,4 @@
-function pdOdd2Eeglab(projectInfo)
+function pdOdd2Eeglab(projectInfo,optns)
 %function pdOdd2Eeglab(projectInfo)
 %
 %Function to take powerdiva raw data and read it into EEGlab.
@@ -19,7 +19,6 @@ condAndTrialNum = sscanf([allRaw.name],'Raw_c%d_t%d.mat');
 %Finds unique condition numbers in the export directory.
 condNum = unique(condAndTrialNum(1:2:end))';
 
-  
 
 for iCond = condNum,
 
@@ -48,7 +47,15 @@ for iCond = condNum,
     EEG = pop_importdata( 'dataformat', 'array', 'data', data, 'srate',condInfo{1}.FreqHz,...
         'pnts',condInfo{1}.CycleLen, 'xmin',0, 'nbchan',0);
     
-    EEG.setname=[projectInfo.subjId '_odd_c' num2str(iCond,'%0.3d')];
+    if isfield(optns,'selectByResponse') && ~isempty(optns.selectByResponse)
+
+        trialString = optns.selectByResponse;
+    else
+        trialString = 'odd';
+    end
+    
+    
+    EEG.setname=[projectInfo.subjId '_' trialString '_c' num2str(iCond,'%0.3d')];
     
     EEG = eeg_checkset( EEG );
     EEG = pop_importepoch( EEG, epch, { 'RT'}, 'timeunit',0.001, 'headerlines',0, 'clearevents', 'off');
