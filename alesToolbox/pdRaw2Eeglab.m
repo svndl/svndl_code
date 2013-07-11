@@ -1,9 +1,11 @@
-function pdRaw2Eeglab(projectInfo,optns)
+function condInfo=pdRaw2Eeglab(projectInfo,optns)
 %function pdRaw2Eeglab(projectInfo)
 %
 %Function to take pdRaw data and read it into EEGlab.
 %
 %
+
+rejectBadEpochs = false; %Defaults to returning ALL epochs;
 
   
 outputDir = fullfile(projectInfo.projectDir,projectInfo.subjId,'_dev_');
@@ -19,7 +21,7 @@ condAndTrialNum = sscanf([allRaw.name],'Raw_c%d_t%d.mat');
 %Finds unique condition numbers in the export directory.
 condNum = unique(condAndTrialNum(1:2:end))';
 
-  
+condInfo = {};  
 
 for iCond = condNum,
 
@@ -35,10 +37,11 @@ for iCond = condNum,
     
    
     
-    [data info] = loadPDraw(rawFiles,0);
+    [data info] = loadPDraw(rawFiles,rejectBadEpochs);
     %Hacky multiplier, fix this ---JMA
     data = 1e6*data;
     
+	condInfo{iCond} = info;
     
 
     
@@ -47,7 +50,18 @@ for iCond = condNum,
     
     EEG.setname=[projectInfo.subjId '_c' num2str(iCond,'%0.3d')];
     EEG = eeg_checkset( EEG );
-    
+	
+	if ~exist(outputDir,'dir')
+		[success, msg] = mkdir(outputDir);
+	
+		if ~success
+			disp(msg)
+			error('Error making output dir');
+		end
+		
+	end
+	
+		
     EEG = pop_saveset( EEG, 'filepath',outputDir,'filename',[EEG.setname '.set'], 'savemode', 'onefile');
 
 end

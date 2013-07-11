@@ -105,12 +105,15 @@ for iSubj = 3:length(subjectList),
             [ outputBySubject{subjNumber} ] = functionHandle(projectInfo,varargin{:});
         else
             functionHandle(projectInfo,varargin{:});
+			outputBySubject{subjNumber} = [];
         end
     else
         if nargout(functionHandle) > 0 
             [ outputBySubject{subjNumber} ] = functionHandle(projectInfo);
-        else
+		else
+			
             functionHandle(projectInfo);
+			outputBySubject{subjNumber} = [];
         end
     end
     
@@ -119,3 +122,6 @@ for iSubj = 3:length(subjectList),
     
     
 end
+
+
+
