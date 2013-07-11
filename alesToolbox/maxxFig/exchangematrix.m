@@ -1,0 +1,1 @@
+function tEM = exchangematrix( aNC, aNS, varargin )% function tEM = exchangematrix( aNC, aNS, opt: aNEx )% constructs an exchange matrix for permutation testing% aNC is number of conditions% aNS is number of subjects% aNEx is desired number of exchanges% if omitted, number of exchanges is min( 1000 or aNC ^ aNS )

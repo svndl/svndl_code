@@ -1,0 +1,49 @@
+#!/bin/bash
+
+sysname=`uname`
+echo $sysname
+if  [ $sysname != "Darwin" ]  
+then
+   echo Untested on Linux
+fi
+
+source ~/.bashrc
+source ~/.bash_profile
+
+export SUBJECT=$1;
+REG=$2;
+ELEC=$3;
+COV=$4;
+FWDOUT=$5;
+INVOUT=$6;
+
+SPHOUT=${FWDOUT%fwd.fif}sph-fwd.fif;
+
+subjSrc=$SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-ico-5p-src.fif;
+
+echo $SUBJECTS_DIR
+pwd
+echo Executing:
+#echo mne_do_forward_solution --spacing ico-5 --bem $SUBJECT --trans $REG --meas $3 --fwd $FWDOUT --mindist 2.5
+#echo mne_do_inverse_operator --eeg --fwd $FWDOUT --senscov $COV --depth --loose .2 --eegreg .01 --inv $INVOUT
+
+
+mne_do_forward_solution --spacing ico-5p --bem $SUBJECT --trans $REG --meas $3 --fwd $FWDOUT --overwrite --mindist 2.5
+
+
+#Old sphere model creation, incorrect origin
+#mne_forward_solution --eeg --src $subjSrc --trans $REG --meas $3 --fwd $SPHOUT --eegmodel default 
+
+mne_forward_solution --eeg --mricoord --eegscalp --origin 0:-20:10 --eegrad 110 --src $subjSrc --trans $REG --meas $3 --fwd $SPHOUT --eegmodel default
+
+mne_do_inverse_operator --eeg --fwd $FWDOUT --senscov $COV --loose .2 --eegreg .02 --inv $INVOUT
+#mne_do_inverse_operator --eeg --fwd $FWDOUT --senscov $COV --loose 1 --eegreg .0 --inv $INVOUT
+
+
+
+
+#mne_forward_solution --eeg --meas $1 --mri $2 --src  
+#T_Avg_All_512_c001_MSTM.fif --mri COR.fif \\
+#--src $SUBJECTS_DIR/yury/bem/yury-ico-5-src.fif --mindist 2.5  \\
+#--bem $SUBJECTS_DIR/yury/bem/yury-bem-sol.fif --fwd rbtx_skeri0055_112308-fwd.fif
+

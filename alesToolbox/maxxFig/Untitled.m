@@ -1,0 +1,1 @@
+tX = rand(10);tY = tX;assignin( 'base', 'tX', tX )

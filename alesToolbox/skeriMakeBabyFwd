@@ -1,0 +1,27 @@
+#!/bin/bash
+
+source ~/.bashrc
+source ~/.bash_profile
+
+export SUBJECT=$1;
+REG=$2;
+ELEC=$3;
+FWDOUT=$4;
+
+SPHOUT=${FWDOUT%fwd.fif}sph-fwd.fif;
+
+scriptDir=${0%skeriMakeBabyFwd};
+
+if [ ! -e $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif ]
+then
+echo mne_volume_source_space --bem $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-bem.fif --mri $SUBJECTS_DIR/$SUBJECT/mri/T1.mgz --grid 5 --mindist 5 --src $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif
+mne_volume_source_space --bem $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-bem.fif --mri $SUBJECTS_DIR/$SUBJECT/mri/T1.mgz --grid 5 --mindist 5 --src $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif
+fi
+
+subjSrc=$SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif;
+
+mne_forward_solution --eeg --mricoord --eegscalp --origin 2:0:-11 --eegrad 85 --src $subjSrc --trans $REG --meas $3 --fwd $SPHOUT --eegmodels $scriptDir/babyEegModels --eegmodel baby2_1Conduct
+
+mne_forward_solution --eeg  --grad --src $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-vol-5mm-src.fif  --bem $SUBJECTS_DIR/$SUBJECT/bem/$SUBJECT-bem-sol.fif --trans $REG --meas $ELEC --fwd $FWDOUT --mricoord
+
+
