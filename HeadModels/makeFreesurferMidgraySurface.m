@@ -35,7 +35,7 @@ else
 end
 
 % check for req'd functions
-if ~exist('freesurfer_write_surf','file')		% no write_surf.m in MGH matlab toolbox
+if ~exist('freesurfer_write_surf','file') &&	~exist('write_surf','file')		% no write_surf.m in MGH matlab toolbox
 	if ispc
 		path2add = 'X:\toolbox\matlab_toolboxes\EEG_MEG_Toolbox\eeg_toolbox';
 	else
@@ -51,7 +51,11 @@ for hemi = 'lr';
 	 Vwhite     = freesurfer_read_surf(fullfile(FSdir,'surf',[hemi,'h.white']));
 	[Vmid,Fmid] = freesurfer_read_surf(fullfile(FSdir,'surf',[hemi,'h.pial']));
 	 Vmid = (1-fWhite2Pial)*Vwhite + fWhite2Pial*Vmid;
-	freesurfer_write_surf(fullfile(FSdir,'surf',[hemi,'h.midgray']),Vmid,Fmid)
+    if exist('freesurfer_write_surf','file')
+        freesurfer_write_surf(fullfile(FSdir,'surf',[hemi,'h.midgray']),Vmid,Fmid)
+    elseif exist('write_surf','file')
+        write_surf(fullfile(FSdir,'surf',[hemi,'h.midgray']),Vmid,Fmid)
+    end
 end
 
 disp(' ')
