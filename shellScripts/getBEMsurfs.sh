@@ -40,19 +40,21 @@ flirt -usesqform -ref $FSLDIR/data/standard/MNI152_T1_1mm -in $1 -omat $xfm.txt 
 # find other surfaces
 echo "extracting inner skull, outer skull, and scalp surfaces/volumes"
 #betsurf -m -s -p 1 $1 ${2} ${base}_T2brain_mesh.off ${base}_T1ref.txt betsurf
-betsurf -m -s $1 $2 ${brain}_mesh.vtk $xfm.txt $base
-betsurf -m -s -p 1 $1 $2 ${brain}_mesh.vtk $xfm.txt $baseHiRes
+#betsurf -m -s $1 $2 ${brain}_mesh.vtk $xfm.txt $base
+
+#note: only doing hi res now. if this takes too long, revert to regular res above
+betsurf -m -s -p 1 $1 $2 ${brain}_mesh.vtk $xfm.txt $base
 
 # replace the skull surfaces with the high res versions.
 
-echo $baseHiRes $base
-mv $baseHiRes_inskull_mesh.off $base_inskull_mesh.off
-mv $baseHiRes_inskull_mask.nii.gz $base_inskull_mask.nii.gz
-mv $baseHiRes_outskull_mesh.off $base_outskull_mesh.off
-mv $baseHiRes_outskull_mask.nii.gz $base_outskull_mask.nii.gz
-mv $baseHiRes_skull_mask.nii.gz $base_skull_mask.nii.gz
+#echo $baseHiRes $base
+#mv $baseHiRes_inskull_mesh.off $base_inskull_mesh.off
+#mv $baseHiRes_inskull_mask.nii.gz $base_inskull_mask.nii.gz
+#mv $baseHiRes_outskull_mesh.off $base_outskull_mesh.off
+#mv $baseHiRes_outskull_mask.nii.gz $base_outskull_mask.nii.gz
+#mv $baseHiRes_skull_mask.nii.gz $base_skull_mask.nii.gz
 
-rm $baseHiRes*
+#rm $baseHiRes*
 
 
 echo " "
