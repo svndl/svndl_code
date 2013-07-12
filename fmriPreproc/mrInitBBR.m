@@ -294,16 +294,22 @@ else
 	structVolFSL        = 'vAnat';			% w/o extension
 end
 
+brainVolFreeSurfer = 'brain.mgz';
+brainVolFSL        = 'vBrain';
 wmVolFreeSurfer = 'filled.mgz'; % White matter surface flood filled from freesurfer
 wmVolFSL = 'filled_wm'; % White matter surface flood filled from freesurfer
 
 
 subjStructFile = fullfile(subjNiftiDir,structVolFSL);
 subjWmFile     = fullfile(subjNiftiDir,wmVolFSL);
+subjBrainFile     = fullfile(subjNiftiDir,brainVolFSL);
+
 
 if replaceFileFlag( [subjStructFile,extFSL] )
 	freesurferVol = fullfile(SUBJECTS_DIR,reconOptions.FSsubjid,'mri',structVolFreeSurfer);
 	freesurferWmVol = fullfile(SUBJECTS_DIR,reconOptions.FSsubjid,'mri',wmVolFreeSurfer);
+
+	freesurferBrainVol = fullfile(SUBJECTS_DIR,reconOptions.FSsubjid,'mri',brainVolFreeSurfer);
 	
 	if ~exist(freesurferVol,'file')
 		error('%s does not exist',freesurferVol)
@@ -316,6 +322,11 @@ if replaceFileFlag( [subjStructFile,extFSL] )
 	runSysCmd( sprintf('fslswapdim %s SI AP LR %s',subjWmFile,subjWmFile) );
 	
 	runSysCmd( sprintf('fslmaths %s -thr 0.5 -bin %s', subjWmFile, subjWmFile)); %threshold
+
+	%Create brain volume for alignment procedure
+	runSysCmd( sprintf('mri_convert %s %s%s',freesurferBrainVol,subjBrainFile,extFSL) );
+	runSysCmd( sprintf('fslswapdim %s SI AP LR %s',subjBrainFile,subjBrainFile) );
+	
 	
 elseif reconOptions.verbose
 	fprintf('Skipping mri_convert %s to nifti\n',structVolFreeSurfer)
@@ -332,7 +343,13 @@ end
 
 % Calculate transform using flirt
 flirtOpts = '-dof 6 -usesqform -nosearch';
+
 flirtBbrOpts = '-dof 6 -cost bbr -bbrslope 0.5 -usesqform -schedule ${FSLDIR}/etc/flirtsch/bbr.sch ';
+
+%  cost function uses -.5 when gray matter is brighter than white (e.g.
+% T2) and .5 when gray matter is darker than white (e.g. T1)
+% This appears to be the opposite of the Greves paper
+
 % flirtOpts = '-dof 6 -usesqform -coarsesearch 8 -finesearch 1 -searchrx -45 45 -searchry -45 45 -searchrz -45 45';
 if boldInplane
 	flirtBold = ' -cost mutualinfo';
@@ -356,16 +373,30 @@ if isempty(wholeHeadName)
 		else
 			regFile = inplaneFile;
 		end
+		
 		if boldInplane
+			
 			% with mean BOLD it's better to align structural to inplane & invert?   do it anyway?
 			% might want to set an initial transform too using sqform2xform, results are different though not much?
 			xfm12invFile = fullfile(inputDir,'xfmFlirtInv.txt');
+			xfmInitFile = fullfile(inputDir,'xfmInitEpi2Brain.txt')
+			
 			if replaceFileFlag( xfm12File )
-				runSysCmd( sprintf('flirt %s -in %s -ref %s -omat %s',[flirtOpts,flirtBold],subjStructFile,regFile,xfm12invFile) );
+				flirtBbrOpts = '-dof 6 -cost bbr -usesqform -schedule ${FSLDIR}/etc/flirtsch/bbr.sch ';
+
+				%First do a quick flirt of the epi to the brain.
+				runSysCmd( sprintf('flirt %s -in %s -ref %s -omat %s',[flirtOpts,flirtBold],regFile,subjBrainFile,xfmInitFile) );
+				
+				runSysCmd( sprintf('flirt %s -in %s -ref %s -init %s -omat %s -wmseg %s',[flirtBbrOpts,flirtBold],regFile,subjStructFile,xfmInitFile,xfm12File,subjWmFile) );
 			else
 				fprintf('Skipping registration of segmented structural to inplane\n')
 			end
-			runSysCmd( sprintf('convert_xfm -omat %s -inverse %s',xfm12File,xfm12invFile) );
+			
+			%runSysCmd( sprintf('convert_xfm -omat %s -inverse %s',xfm12File,xfm12invFile) );
+			
+			
+		
+			
 		else
 			runSysCmd( sprintf('flirt %s -in %s -ref %s -omat %s -wmseg %s',[flirtBbrOpts,flirtBold],regFile,subjStructFile,xfm12File,subjWmFile) );
 		end
