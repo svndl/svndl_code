@@ -21,10 +21,15 @@ if ~exist('FSsubjid','var') || isempty(FSsubjid)
 	end
 	[junk,FSsubjid] = fileparts(FSdir);
 else
-	FSdir = fullfile(SKERIanatDir,'FREESURFER_SUBS',FSsubjid);
-	if ~exist(FSdir,'dir')
-		error('Directory %s does not exist',FSdir)
-	end
+    subjdir = getenv('SUBJECTS_DIR');
+    if ~isempty(subjdir)
+        FSdir = fullfile(subjdir,FSsubjid);
+    else
+        FSdir = fullfile(SKERIanatDir,'FREESURFER_SUBS',FSsubjid);
+        if ~exist(FSdir,'dir')
+            error('Directory %s does not exist',FSdir)
+        end
+    end
 end
 
 %% check for req'd functions
