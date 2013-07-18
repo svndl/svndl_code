@@ -229,7 +229,8 @@ msh = meshSet(msh,'connectionMatrix',1);				% msh.conMat was empty, now = nVerti
 msh.surface = surfName;
 msh.nVertexLR = nVertexLR;
 
-defDir = fullfile(SKERIanatDir,strtok(FSsubjid,'_'));
+anatDir = getpref('mrCurrent','anatomyDir');
+defDir = fullfile(anatDir,strtok(FSsubjid,'_'));
 if isdir(defDir)
 	if useMNEdec
 		if isdir(fullfile(defDir,'Standard'))
