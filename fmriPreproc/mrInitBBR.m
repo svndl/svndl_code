@@ -443,13 +443,18 @@ xfmFlirt = load(xfm12File,'-ascii');
 % Convert flirt transform to mrVista alignment
 
 % Voxel scaling to mm
-[~,inplaneVolRes,~,~,Xinplane] = getVolumeInfo( inplaneFile );
+[~,inplaneVolRes,inplaneVolOrd,~,Xinplane] = getVolumeInfo( inplaneFile );
 Dstruct  = diag([ structVolRes 1]);
 Dinplane = diag([inplaneVolRes 1]);
 
 % 1-based indexing to zero-based indexing voxel shift
 V0 = [ eye(3), -ones(3,1); 0 0 0 1 ];
 
+% vista now puts inplanes into a PRS format. This 
+%xformToPrs=niftiCreateXformBetweenStrings(inplaneVolOrd, 'PRS');
+%HACK ALERT!!!!!!!!
+xformToPrs = eye(4);
+xformToPrs=xformToPrs(:,[2 1 3 4]);
 
 % Transform notes:
 % Dstruct*[struct-IPR-RAD] = xfmFlirt * Dinplane*Xinplane*[inplane-NEURO]
@@ -457,7 +462,8 @@ V0 = [ eye(3), -ones(3,1); 0 0 0 1 ];
 % inv(V0)*[struct-IPR-RAD] = xfmVista *           inv(V0)*[inplane-whatever]
 %
 % Dstruct*V0*xfmVista*inv(V0) = xfmFlirt*Dinplane*Xinplane
-xfmVista = (V0\(Dstruct\xfmFlirt*Dinplane*Xinplane))*V0;
+%xfmVista = (V0\(Dstruct\xfmFlirt*Dinplane*Xinplane))*V0;
+xfmVista = ((V0\(Dstruct\xfmFlirt*Dinplane))*V0)*xformToPrs*Xinplane;
 
 et = [ 0 0 toc ];
 et(1) = floor(et(3)/3600);
