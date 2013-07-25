@@ -21,10 +21,15 @@ if ~exist('FSsubjid','var') || isempty(FSsubjid)
 	end
 	[junk,FSsubjid] = fileparts(FSdir);
 else
-	FSdir = fullfile(SKERIanatDir,'FREESURFER_SUBS',FSsubjid);
-	if ~exist(FSdir,'dir')
-		error('Directory %s does not exist',FSdir)
-	end
+    subjdir = getenv('SUBJECTS_DIR');
+    if ~isempty(subjdir)
+        FSdir = fullfile(subjdir,FSsubjid);
+    else
+        FSdir = fullfile(SKERIanatDir,'FREESURFER_SUBS',FSsubjid);
+        if ~exist(FSdir,'dir')
+            error('Directory %s does not exist',FSdir)
+        end
+    end
 end
 
 %% check for req'd functions
@@ -224,7 +229,8 @@ msh = meshSet(msh,'connectionMatrix',1);				% msh.conMat was empty, now = nVerti
 msh.surface = surfName;
 msh.nVertexLR = nVertexLR;
 
-defDir = fullfile(SKERIanatDir,strtok(FSsubjid,'_'));
+anatDir = getpref('mrCurrent','anatomyDir');
+defDir = fullfile(anatDir,strtok(FSsubjid,'_'));
 if isdir(defDir)
 	if useMNEdec
 		if isdir(fullfile(defDir,'Standard'))

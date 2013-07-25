@@ -20,14 +20,18 @@ if ~exist('FSsubjid','var') || isempty(FSsubjid)
 	end
 	[junk,FSsubjid] = fileparts(FSdir);
 else
-	if ispc
-		FSdir = fullfile('X:\anatomy\FREESURFER_SUBS',FSsubjid);
-	else
-		FSdir = fullfile('/raid/MRI/anatomy/FREESURFER_SUBS',FSsubjid);
-	end
-	if ~exist(FSdir,'dir')
-		error('Directory %s does not exist',FSdir)
-	end
+    FSdir = getenv('SUBJECTS_DIR');
+    FSdir = fullfile(FSdir,FSsubjid);
+    if isempty(FSdir)
+        if ispc
+            FSdir = fullfile('X:\anatomy\FREESURFER_SUBS',FSsubjid);
+        else
+            FSdir = fullfile('/raid/MRI/anatomy/FREESURFER_SUBS',FSsubjid);
+        end
+        if ~exist(FSdir,'dir')
+            error('Directory %s does not exist',FSdir)
+        end
+    end
 end
 if ~exist('mrmFile','var') || isempty(mrmFile)
 	[mrmFile,mrmPath] = uigetfile('*.mat','cortex mesh mat-file');
