@@ -76,6 +76,7 @@ switch lower(strippedName)
         surf2Render.tris = ctx.faces;
         cortexLoaded = true;
         p.surfReflectance = [.6 .3 0 2];
+        p.surfAlpha = 1;
         tag = 'defaultCortex';
     otherwise
         error(['Invalid anatomical surface name: ' p.surfName])
