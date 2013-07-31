@@ -387,7 +387,7 @@ if isempty(wholeHeadName)
 				%First do a quick flirt of the epi to the brain.
 				runSysCmd( sprintf('flirt %s -in %s -ref %s -omat %s',[flirtOpts,flirtBold],regFile,subjBrainFile,xfmInitFile) );
 				
-				runSysCmd( sprintf('flirt %s -in %s -ref %s -init %s -omat %s -wmseg %s',[flirtBbrOpts,flirtBold],regFile,subjStructFile,xfmInitFile,xfm12File,subjWmFile) );
+				runSysCmd( sprintf('flirt %s -in %s -ref %s -init %s -omat %s -wmseg %s',[flirtBbrOpts],regFile,subjStructFile,xfmInitFile,xfm12File,subjWmFile) );
 			else
 				fprintf('Skipping registration of segmented structural to inplane\n')
 			end
@@ -398,7 +398,7 @@ if isempty(wholeHeadName)
 		
 			
 		else
-			runSysCmd( sprintf('flirt %s -in %s -ref %s -omat %s -wmseg %s',[flirtBbrOpts,flirtBold],regFile,subjStructFile,xfm12File,subjWmFile) );
+			runSysCmd( sprintf('flirt %s -in %s -ref %s -omat %s -wmseg %s',[flirtBbrOpts],regFile,subjStructFile,xfm12File,subjWmFile) );
 		end
 	elseif reconOptions.verbose
 		fprintf('Skipping registration of inplane to segmented structural\n')
@@ -407,7 +407,7 @@ else
 	% Register inplane volume to whole head, don't brain extract
 	xfm1File = fullfile(inputDir,'xfmStep1.txt');
 	if replaceFileFlag( xfm1File )
-		runSysCmd( sprintf('flirt %s -in %s -ref %s -omat %s',[flirtOpts,flirtBold],inplaneFile,wholeHeadFile,xfm1File) );
+		runSysCmd( sprintf('flirt %s -in %s -ref %s -omat %s',[flirtOpts],inplaneFile,wholeHeadFile,xfm1File) );
 	elseif reconOptions.verbose
 		fprintf('Skipping registration of inplane to whole head\n')
 	end
