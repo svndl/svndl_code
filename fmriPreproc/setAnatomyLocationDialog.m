@@ -83,7 +83,7 @@ set(hObject, 'Units', OldUnits);
 % Choose default command line output for setAnatomyLocationDialog
 handles.output = hObject;
 handles.errorString = {};
-if nargin >= 4
+if nargin >= 4 && ~isempty(varargin{1});
     handles.subjId = varargin{1};
     set(handles.subjIdText,'String',handles.subjId);    
 else
@@ -123,6 +123,8 @@ if ispref('mrCurrent','AnatomyFolder')
 %     guidata(hObject, handles);
 %     validateAnatomyDir(hObject,handles)
 %     handles = guidata(hObject);
+elseif ispref('VISTA','defaultAnatomyPath');
+        handles.anatDir = getpref('VISTA','defaultAnatomyPath');
 else
     handles.errorString{end+1} = 'no mrCurrent anatomy folder preference';
 end
@@ -176,7 +178,7 @@ subjectFreesurferDir = fullfile(handles.fsSubjectsDir,handles.fsSubjId);
 subjectAnatomyDir = fullfile(handles.anatDir,handles.subjId);
 
 if ~isdir(subjectFreesurferDir)
-    handles.errorString{end+1} = ['Cannot Find Directory: ' subjectFreesurferDir];
+    handles.errorString{end+1} = ['Cannot Find SUBJECT ' handles.fsSubjId ' in freesurfer folder: ' subjectFreesurferDir];
     set(handles.fsIdText,'BackgroundColor',[1 0 0]);
     isGood = false;
 else
@@ -185,7 +187,7 @@ else
 end
 
 if ~isdir(subjectAnatomyDir)
-    handles.errorString{end+1} = ['Cannot Find Directory: ' subjectAnatomyDir];
+    handles.errorString{end+1} = ['Cannot Find SUBJECT ' handles.subjId ' in anatomy folder: ' subjectAnatomyDir];
     set(handles.subjIdText,'BackgroundColor',[1 0 0]);
     isGood = false;
 else
@@ -384,6 +386,7 @@ else
     
     setpref('freesurfer','SUBJECTS_DIR',handles.fsSubjectsDir);
     setpref('mrCurrent','AnatomyFolder',handles.anatDir);
+    setpref('VISTA','defaultAnatomyPath',handles.anatDir);
     disp(['Setting freesurfer SUBJECTS_DIR to: ' handles.fsSubjectsDir]);
     disp(['Setting mrCurrent/mrVista anatomy directory to: ' handles.anatDir]);
     
@@ -415,7 +418,13 @@ function anatomyBrowseButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-handles.anatDir = uigetdir('','Choose Anatomy Dir');
+userDir = uigetdir('','Choose Anatomy Dir');
+
+if userDir ==0
+    return
+end
+
+handles.anatDir = userDir;
 
 guidata(hObject, handles);
 validateAnatomyDir(hObject,handles);
@@ -426,7 +435,12 @@ function fsBrowseButton_Callback(hObject, eventdata, handles)
 % hObject    handle to fsBrowseButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.fsSubjectsDir = uigetdir('','Choose Freesurfer SUBJECTS_DIR Dir');
+userDir = uigetdir('','Choose Freesurfer SUBJECTS_DIR Dir');
+
+if userDir ==0
+    return
+end
+handles.fsSubjectsDir = userDir;
 
 guidata(hObject, handles);
 validateFreesurferDir(hObject,handles);
