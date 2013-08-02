@@ -19,6 +19,8 @@ if (exist(fsfasttoolbox) == 7)
 end
 clear fsfasthome fsfasttoolbox;
 %-----------------------------------------------------%
+
+%------------ FSL ------------------------%
 path1 = getenv('PATH');
 path1 = [path1 ':/usr/local/fsl/bin'];
 setenv('PATH', path1);
@@ -30,3 +32,4 @@ fsldir = getenv('FSLDIR');
 fsldirmpath = sprintf('%s/etc/matlab',fsldir);
 path(path, fsldirmpath);
 clear fsldir fsldirmpath;
+%-----------------------------------------%
