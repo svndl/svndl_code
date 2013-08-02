@@ -1,18 +1,22 @@
 function P=mrInitBBR(subjid,inputDir,TR)
-% USAGE: mrInitNorcia(subjid,[inputDir],[TR])
+% USAGE: mrInitNorcia([subjid],[inputDir],[TR])
 % where: subjid   = subject ID string to locate vAantomy, or skeri #
 %        inputDir = directory where functional nifti files are found
 %        TR       = force repetition time of user's choice
 %
+% If no input, it asks.
 % e.g.
+
 % >> mrInitNorcia(123)
 % >> mrInitNorcia('skeri0123')
 % >> mrInitNorcia('jones','/raid/MRI/data/study/fMRI/session')
 % >> mrInitNorcia('nl-0007','',2)
 
-error(nargchk(1,3,nargin))
+error(nargchk(0,3,nargin))
 
-if isnumeric(subjid)
+if nargin<1
+    subjid = [];
+elseif isnumeric(subjid)
 	subjid = sprintf('skeri%04d',subjid);
 end
 
@@ -24,6 +28,12 @@ end
 
 if ~exist('TR','var') %|| isempty(TR)
 	TR = [];
+end
+
+subjid = setAnatomyLocationDialog(subjid);
+if isempty(subjid)
+    disp('Subject ID not Set. Aborting');
+    return;
 end
 
 
@@ -41,12 +51,28 @@ if ~isdir(SUBJECTS_DIR)
 	error('SUBJECTS_DIR %s isn''t a directory',SUBJECTS_DIR)
 end
 
+
+% Check that fsl is configured and present
 % Check FSL's FSLOUTPUTTYPE environment variable
-FSLOUTPUTTYPE = getenv('FSLOUTPUTTYPE');
-expectedFSLoutput = 'NIFTI_GZ';
-if ~strcmp(FSLOUTPUTTYPE,expectedFSLoutput)
-	error('FSLOUTPUTTYPE environment variable = %s, expecting = %s',FSLOUTPUTTYPE,expectedFSLoutput)
+fslIsGood = checkFslSetup();
+
+if ~fslIsGood
+    disp('FSL is NOT setup correctly!')
+    disp('Trying to fix it')
+    setupSucceeded = seupFslEnvironment()
+    if setupSucceeded 
+        fslIsGood = checkFslSetup();
+        disp('Able to automatically setup FSL.')
+        disp('Consider adding setupFslEnvironment() to startup.m');
+    end
+    
+    if ~setupSucceeded || ~fslIsGood
+        error('Cannot validate FSL install!  Either FSL is not installed or setup is incorrect')
+    end
+    
+    
 end
+
 
 % Find mrVista anatomy directory
 if ispref('VISTA','defaultAnatomyPath')
@@ -562,13 +588,13 @@ fprintf('& updated dataTYPES.  done.\n')
 return	% ========================================================================================
 
 
-	function result = runSysCmd(cmd)
-		result = runSystemCmd(cmd,reconOptions.verbose);
-	end
+function result = runSysCmd(cmd)
+result = runSystemCmd(cmd,reconOptions.verbose);
+end
 
-	function replaceFlag = replaceFileFlag(fileName)
-		[replaceFlag,reconOptions.replaceAll] = replaceFileQuery(fileName,reconOptions.replaceAll);
-	end
+function replaceFlag = replaceFileFlag(fileName)
+[replaceFlag,reconOptions.replaceAll] = replaceFileQuery(fileName,reconOptions.replaceAll);
+end
 
 
 end
