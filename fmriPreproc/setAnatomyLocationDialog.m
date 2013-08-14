@@ -94,7 +94,7 @@ handles.fsSubjId = [handles.subjId '_fs4'];
 set(handles.fsIdText,'String',handles.fsSubjId);    
 
 % freesurfer SUBJECTS_DIR Matlab preference will override system environment variable
-handles.fsSubjectsDir = [];
+handles.fsSubjectsDir = '';
 
 if ispref('freesurfer','SUBJECTS_DIR')
 	SUBJECTS_DIR = getpref('freesurfer','SUBJECTS_DIR');
@@ -117,7 +117,7 @@ else
 end
 
 
-handles.anatDir = [];
+handles.anatDir = '';
 if ispref('mrCurrent','AnatomyFolder')
     handles.anatDir = getpref('mrCurrent','AnatomyFolder');
 %     guidata(hObject, handles);
@@ -129,6 +129,14 @@ else
     handles.errorString{end+1} = 'no mrCurrent anatomy folder preference';
 end
 
+if ~ischar(handles.anatDir)
+    handles.anatDir = '';
+end
+
+
+if ~ischar(handles.fsSubjectsDir)
+    handles.fsSubjectsDir = '';
+end
 
 
 set(handles.msgBox,'String',handles.errorString);
@@ -232,7 +240,6 @@ validateInputs(hObject,handles)
  
 
 function isGood = validateAnatomyDir(hObject,handles)
-
 
 if ~isdir(handles.anatDir)
     set(handles.anatomyDirText,'String',handles.anatDir);
