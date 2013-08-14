@@ -59,7 +59,7 @@ fslIsGood = checkFslSetup();
 if ~fslIsGood
     disp('FSL is NOT setup correctly!')
     disp('Trying to fix it')
-    setupSucceeded = seupFslEnvironment()
+    setupSucceeded = setupFslEnvironment()
     if setupSucceeded 
         fslIsGood = checkFslSetup();
         disp('Able to automatically setup FSL.')
