@@ -22,7 +22,7 @@ function varargout = preprocOptionsDialog(varargin)
 
 % Edit the above text to modify the response to help preprocOptionsDialog
 
-% Last Modified by GUIDE v2.5 14-Aug-2013 16:03:00
+% Last Modified by GUIDE v2.5 17-Aug-2013 12:26:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -52,7 +52,7 @@ function preprocOptionsDialog_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to preprocOptionsDialog (see VARARGIN)
 
 % Choose default command line output for preprocOptionsDialog
-handles.output = 'Yes';
+handles.output = [];
 
 % Update handles structure
 guidata(hObject, handles);
@@ -61,17 +61,20 @@ guidata(hObject, handles);
 % Hint: when choosing keywords, be sure they are not easily confused 
 % with existing figure properties.  See the output of set(figure) for
 % a list of figure properties.
-if(nargin > 3)
-    for index = 1:2:(nargin-3),
-        if nargin-3==index, break, end
-        switch lower(varargin{index})
-         case 'title'
-          set(hObject, 'Name', varargin{index+1});
-         case 'string'
-          set(handles.text1, 'String', varargin{index+1});
-        end
-    end
-end
+% 
+% if(nargin > 3)
+%     for index = 1:2:(nargin-3),
+%         if nargin-3==index, break, end
+%         switch lower(varargin{index})
+%          case 'title'
+%           set(hObject, 'Name', varargin{index+1});
+%          case 'string'
+%           set(handles.text1, 'String', varargin{index+1});
+%         end
+%     end
+% end
+
+
 
 % Determine the position of the dialog - centered on the callback figure
 % if available, else, centered on the screen
@@ -104,33 +107,70 @@ set(hObject, 'Units', OldUnits);
 % Make the GUI modal
 set(handles.figure1,'WindowStyle','modal')
 
+% Default options
+defaultOptions = struct(...
+    'subjid','Input SubjectID',...
+    'FSsubjid','',...
+    'skipVols',0,...
+    'keepVols',Inf,...
+    'doSliceTimeCorr',true,...
+    'doMotionCorr',true,...
+    'sliceTimeFirstFlag',true,...		% true = slice time correction before motion correction
+    'sliceUpFlag',true,...				% true = 1:N, false = N:-1:1
+    'sliceInterleave',1,...				% 0 = sequential, 1 = odd,even, 2 = even,odd
+    'revSliceOrderFlag',true,...		% slicetimer corrects properly when slice-order file is reverse of true order
+    'replaceAll',0,...					% -1 = don't replace any existing files, 0 = ask, 1 = replace all existing files
+    'verbose',~false,...					% dump system commands to Matlab command window
+    'betFlag',~true,...					% bet before aligning to freesurfer space
+    'iRef',1,...
+    'mrVistaSession','',...
+    'mrVistaDescription','',...
+    'mrVistaComment','',...
+    'mrVistaCycles',1	);
+handles.reconOptions = defaultOptions;
 
 if nargin >= 4 && ~isempty(varargin{1});
-    handles.reconOptions = varargin{1};
-else
-    % Default options
-   defaultOptions = struct(...
-        'subjid','Input SubjectID',...
-        'FSsubjid','',...
-        'skipVols',0,...
-        'keepVols',Inf,...
-        'doSliceTimeCorr',true,...
-        'doMotionCorr',true,...
-        'sliceTimeFirstFlag',true,...		% true = slice time correction before motion correction
-        'sliceUpFlag',true,...				% true = 1:N, false = N:-1:1
-        'sliceInterleave',1,...				% 0 = sequential, 1 = odd,even, 2 = even,odd
-        'revSliceOrderFlag',true,...		% slicetimer corrects properly when slice-order file is reverse of true order
-        'replaceAll',0,...					% -1 = don't replace any existing files, 0 = ask, 1 = replace all existing files
-        'verbose',~false,...					% dump system commands to Matlab command window
-        'betFlag',~true,...					% bet before aligning to freesurfer space
-        'iRef',1,...
-        'mrVistaSession','',...
-        'mrVistaDescription','',...
-        'mrVistaComment','',...
-        'mrVistaCycles',1	);
     
-    handles.reconOptions = defaultOptions;
+    if ischar(varargin{1})
+        handles.reconOptions.subjid = varargin{1};
+        handles.reconOptions.FSsubjid = [varargin{1} '_fs4'];
+    elseif isstruct(varargin{1})
+        handles.reconOptions = varargin{1};
+    end
 end
+
+
+if ispref('mrCurrent','AnatomyFolder')
+    handles.anatDir = getpref('mrCurrent','AnatomyFolder');
+    handles.anatDir = fullfile(handles.anatDir, handles.reconOptions.subjid);
+%     guidata(hObject, handles);
+%     validateAnatomyDir(hObject,handles)
+%     handles = guidata(hObject);
+elseif ispref('VISTA','defaultAnatomyPath');
+    handles.anatDir = getpref('VISTA','defaultAnatomyPath');
+end
+
+if ispref('freesurfer','SUBJECTS_DIR')
+	handles.fsSubjectsDir = getpref('freesurfer','SUBJECTS_DIR');
+end
+
+if ~isfield(handles.reconOptions, 'vAnat') || isempty(handles.reconOptions.vAnat)    
+    handles.reconOptions.vAnat = fullfile(handles.anatDir,'nifti','vAnat');
+end
+
+if ~isfield(handles.reconOptions, 'vBrain') || isempty(handles.reconOptions.vBrain)    
+    handles.reconOptions.vBrain = fullfile(handles.anatDir,'nifti','vBrain');
+end
+
+if ~isfield(handles.reconOptions, 'vClass') || isempty(handles.reconOptions.vClass)    
+    handles.reconOptions.vClass = fullfile(handles.anatDir,'nifti','vClass');
+end
+
+if ~isfield(handles.reconOptions, 'vWm') || isempty(handles.reconOptions.vWm)    
+    handles.reconOptions.vWm = fullfile(handles.anatDir,'nifti','vWm');
+end
+
+handles.inputDir = pwd;
 
 refreshGui(hObject,handles)
 
@@ -168,7 +208,14 @@ set(handles.extractBrain,'Value',handles.reconOptions.betFlag);
 set(handles.refScanIndex,'String',num2str(handles.reconOptions.iRef));    
 
 
+set(handles.volumeAnatomyText,'String',handles.reconOptions.vAnat);
+set(handles.volumeBrainText,'String',handles.reconOptions.vBrain);
+set(handles.volumeClassText,'String',handles.reconOptions.vClass);
+set(handles.volumeWmText,'String',handles.reconOptions.vWm);
+
+
 guidata(hObject, handles);
+
 
 % --- Outputs from this function are returned to the command line.
 function varargout = preprocOptionsDialog_OutputFcn(hObject, eventdata, handles)
@@ -183,13 +230,13 @@ varargout{1} = handles.output;
 % The figure can be deleted now
 delete(handles.figure1);
 
-% --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
+% --- Executes on button press in continueButton.
+function continueButton_Callback(hObject, eventdata, handles)
+% hObject    handle to continueButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-handles.output = get(hObject,'String');
+handles.output = handles.reconOptions;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -198,13 +245,23 @@ guidata(hObject, handles);
 % to get the updated handles structure.
 uiresume(handles.figure1);
 
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
+
+% --- Executes on button press in cancelButton.
+function cancelButton_Callback(hObject, eventdata, handles)
+% hObject    handle to cancelButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-handles.output = get(hObject,'String');
+% handles.output = get(hObject,'String');
+% 
+% % Update handles structure
+% guidata(hObject, handles);
+% 
+% % Use UIRESUME instead of delete because the OutputFcn needs
+% % to get the updated handles structure.
+% uiresume(handles.figure1);
+
+handles.output = [];
 
 % Update handles structure
 guidata(hObject, handles);
@@ -263,7 +320,11 @@ function subjectId_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of subjectId as text
 %        str2double(get(hObject,'String')) returns contents of subjectId as a double
+subjid = get(hObject,'String');
+handles.reconOptions.subjid = subjid;
+handles.reconOptions.FSsubjid = [subjid '_fs4'];
 
+refreshGui(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
 function subjectId_CreateFcn(hObject, eventdata, handles)
@@ -287,6 +348,8 @@ function freesurferId_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of freesurferId as text
 %        str2double(get(hObject,'String')) returns contents of freesurferId as a double
 
+handles.reconOptions.FSsubjid = get(hObject,'String');
+refreshGui(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
 function freesurferId_CreateFcn(hObject, eventdata, handles)
@@ -309,7 +372,8 @@ function skipVol_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of skipVol as text
 %        str2double(get(hObject,'String')) returns contents of skipVol as a double
-
+handles.reconOptions.skipVols = str2double(get(hObject,'String'));
+refreshGui(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
 function skipVol_CreateFcn(hObject, eventdata, handles)
@@ -332,6 +396,8 @@ function keepVol_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of keepVol as text
 %        str2double(get(hObject,'String')) returns contents of keepVol as a double
+handles.reconOptions.keepVols = str2double(get(hObject,'String'));
+refreshGui(hObject,handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -354,6 +420,8 @@ function correctSliceTime_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of correctSliceTime
+handles.reconOptions.doSliceTimeCorr = get(hObject,'Value');
+refreshGui(hObject,handles);
 
 
 % --- Executes on button press in correctMotion.
@@ -364,6 +432,8 @@ function correctMotion_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of correctMotion
 
+handles.reconOptions.doMotionCorr = get(hObject,'Value');
+refreshGui(hObject,handles);
 
 % --- Executes on selection change in processingOrder.
 function processingOrder_Callback(hObject, eventdata, handles)
@@ -375,7 +445,14 @@ function processingOrder_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from processingOrder
 
 % Update handles structure
-guidata(hObject, handles);
+selection = get(hObject,'Value');
+if selection ==1
+    handles.reconOptions.sliceTimeFirstFlag = true;
+elseif selection ==2
+    handles.reconOptions.sliceTimeFirstFlag = false;
+end
+
+refreshGui(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
 function processingOrder_CreateFcn(hObject, eventdata, handles)
@@ -398,6 +475,16 @@ function sliceOrder_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns sliceOrder contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from sliceOrder
+
+selection = get(hObject,'Value');
+
+if selection ==1
+    handles.reconOptions.sliceUpFlag = true;
+elseif selection ==2
+    handles.reconOptions.sliceUpFlag = false;
+end
+
+refreshGui(hObject,handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -422,6 +509,10 @@ function interleaveOrder_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns interleaveOrder contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from interleaveOrder
 
+selection = get(hObject,'Value');
+handles.reconOptions.sliceInterleave=selection-1;
+refreshGui(hObject,handles);
+
 
 % --- Executes during object creation, after setting all properties.
 function interleaveOrder_CreateFcn(hObject, eventdata, handles)
@@ -443,7 +534,8 @@ function reverseSliceFile_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of reverseSliceFile
-
+handles.reconOptions.revSliceOrderFlag = get(hObject,'Value');
+refreshGui(hObject,handles);
 
 % --- Executes on selection change in overwritePolicy.
 function overwritePolicy_Callback(hObject, eventdata, handles)
@@ -453,6 +545,9 @@ function overwritePolicy_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns overwritePolicy contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from overwritePolicy
+
+handles.reconOptions.replaceAll=get(hObject,'Value')-2;
+refreshGui(hObject,handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -476,6 +571,8 @@ function verbose_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of verbose
 
+handles.reconOptions.verbose = get(hObject,'Value');
+refreshGui(hObject,handles);
 
 
 function refScanIndex_Callback(hObject, eventdata, handles)
@@ -601,6 +698,11 @@ function fmriScans_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns fmriScans contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from fmriScans
 
+refScanIdx = get(hObject,'Value');
+set(handles.refScanIndex,'String',num2str(refScanIdx));
+guidata(hObject, handles);
+
+
 
 % --- Executes during object creation, after setting all properties.
 function fmriScans_CreateFcn(hObject, eventdata, handles)
@@ -621,6 +723,14 @@ function selectScans_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+[fMRIfiles,inputDir] = uigetfile(fullfile(handles.inputDir,'*.nii.gz'),'CHOOSE fMRI FILE(S)','MultiSelect','on');
+handles.inputDir = inputDir;
+
+set(handles.fmriScans,'String',fMRIfiles)
+set(handles.fmriScans,'Value',1)
+guidata(hObject, handles);
+
+
 
 % --- Executes on button press in extractBrain.
 function extractBrain_Callback(hObject, eventdata, handles)
@@ -629,7 +739,8 @@ function extractBrain_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of extractBrain
-
+handles.reconOptions.betFlag = get(hObject,'Value');
+refreshGui(hObject,handles);
 
 
 function volumeAnatomyText_Callback(hObject, eventdata, handles)
