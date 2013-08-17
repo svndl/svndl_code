@@ -22,7 +22,7 @@ function varargout = preprocOptionsDialog(varargin)
 
 % Edit the above text to modify the response to help preprocOptionsDialog
 
-% Last Modified by GUIDE v2.5 09-Aug-2013 16:57:39
+% Last Modified by GUIDE v2.5 14-Aug-2013 16:03:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -104,8 +104,71 @@ set(hObject, 'Units', OldUnits);
 % Make the GUI modal
 set(handles.figure1,'WindowStyle','modal')
 
+
+if nargin >= 4 && ~isempty(varargin{1});
+    handles.reconOptions = varargin{1};
+else
+    % Default options
+   defaultOptions = struct(...
+        'subjid','Input SubjectID',...
+        'FSsubjid','',...
+        'skipVols',0,...
+        'keepVols',Inf,...
+        'doSliceTimeCorr',true,...
+        'doMotionCorr',true,...
+        'sliceTimeFirstFlag',true,...		% true = slice time correction before motion correction
+        'sliceUpFlag',true,...				% true = 1:N, false = N:-1:1
+        'sliceInterleave',1,...				% 0 = sequential, 1 = odd,even, 2 = even,odd
+        'revSliceOrderFlag',true,...		% slicetimer corrects properly when slice-order file is reverse of true order
+        'replaceAll',0,...					% -1 = don't replace any existing files, 0 = ask, 1 = replace all existing files
+        'verbose',~false,...					% dump system commands to Matlab command window
+        'betFlag',~true,...					% bet before aligning to freesurfer space
+        'iRef',1,...
+        'mrVistaSession','',...
+        'mrVistaDescription','',...
+        'mrVistaComment','',...
+        'mrVistaCycles',1	);
+    
+    handles.reconOptions = defaultOptions;
+end
+
+refreshGui(hObject,handles)
+
 % UIWAIT makes preprocOptionsDialog wait for user response (see UIRESUME)
 uiwait(handles.figure1);
+
+function refreshGui(hObject,handles)
+
+set(handles.subjectId,'String',handles.reconOptions.subjid);    
+set(handles.freesurferId,'String',handles.reconOptions.FSsubjid);    
+set(handles.skipVol,'String',num2str(handles.reconOptions.skipVols));    
+set(handles.keepVol,'String',num2str(handles.reconOptions.keepVols));    
+
+set(handles.correctSliceTime,'Value',handles.reconOptions.doSliceTimeCorr);    
+set(handles.correctMotion,'Value',handles.reconOptions.doMotionCorr);    
+
+if handles.reconOptions.sliceTimeFirstFlag
+set(handles.processingOrder,'Value',1);    
+else
+set(handles.processingOrder,'Value',2);
+end
+
+if handles.reconOptions.sliceUpFlag
+set(handles.sliceOrder,'Value',1);    
+else
+set(handles.sliceOrder,'Value',2);
+end
+
+set(handles.interleaveOrder,'Value',handles.reconOptions.sliceInterleave+1);
+set(handles.reverseSliceFile,'Value',handles.reconOptions.revSliceOrderFlag);
+
+set(handles.overwritePolicy,'Value',handles.reconOptions.replaceAll+2);
+set(handles.extractBrain,'Value',handles.reconOptions.betFlag);
+
+set(handles.refScanIndex,'String',num2str(handles.reconOptions.iRef));    
+
+
+guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = preprocOptionsDialog_OutputFcn(hObject, eventdata, handles)
@@ -262,18 +325,18 @@ end
 
 
 
-function edit4_Callback(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
+function keepVol_Callback(hObject, eventdata, handles)
+% hObject    handle to keepVol (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit4 as text
-%        str2double(get(hObject,'String')) returns contents of edit4 as a double
+% Hints: get(hObject,'String') returns contents of keepVol as text
+%        str2double(get(hObject,'String')) returns contents of keepVol as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit4_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
+function keepVol_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to keepVol (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -350,19 +413,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in inerleaveOrder.
-function inerleaveOrder_Callback(hObject, eventdata, handles)
-% hObject    handle to inerleaveOrder (see GCBO)
+% --- Executes on selection change in interleaveOrder.
+function interleaveOrder_Callback(hObject, eventdata, handles)
+% hObject    handle to interleaveOrder (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns inerleaveOrder contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from inerleaveOrder
+% Hints: contents = cellstr(get(hObject,'String')) returns interleaveOrder contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from interleaveOrder
 
 
 % --- Executes during object creation, after setting all properties.
-function inerleaveOrder_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to inerleaveOrder (see GCBO)
+function interleaveOrder_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to interleaveOrder (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -382,19 +445,19 @@ function reverseSliceFile_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of reverseSliceFile
 
 
-% --- Executes on selection change in popupmenu4.
-function popupmenu4_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu4 (see GCBO)
+% --- Executes on selection change in overwritePolicy.
+function overwritePolicy_Callback(hObject, eventdata, handles)
+% hObject    handle to overwritePolicy (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu4 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu4
+% Hints: contents = cellstr(get(hObject,'String')) returns overwritePolicy contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from overwritePolicy
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu4_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu4 (see GCBO)
+function overwritePolicy_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to overwritePolicy (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -566,3 +629,137 @@ function extractBrain_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of extractBrain
+
+
+
+function volumeAnatomyText_Callback(hObject, eventdata, handles)
+% hObject    handle to volumeAnatomyText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of volumeAnatomyText as text
+%        str2double(get(hObject,'String')) returns contents of volumeAnatomyText as a double
+handles.anatDir = get(hObject,'String');
+
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function volumeAnatomyText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to volumeAnatomyText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in volumeAnatomyButton.
+function volumeAnatomyButton_Callback(hObject, eventdata, handles)
+% hObject    handle to volumeAnatomyButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+[userFile userDir] = uigetfile('','Choose Volume Anatomy');
+
+if userDir ==0
+    return
+end
+
+handles.reconOptions.vAnat = fullfile(userDir,userFile);
+set(handles.volumeAnatomyText,'String',fullfile(userDir,userFile));
+
+guidata(hObject, handles);
+
+
+
+function volumeBrainText_Callback(hObject, eventdata, handles)
+% hObject    handle to volumeBrainText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of volumeBrainText as text
+%        str2double(get(hObject,'String')) returns contents of volumeBrainText as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function volumeBrainText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to volumeBrainText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in volumeBrainButton.
+function volumeBrainButton_Callback(hObject, eventdata, handles)
+% hObject    handle to volumeBrainButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function volumeWmText_Callback(hObject, eventdata, handles)
+% hObject    handle to volumeWmText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of volumeWmText as text
+%        str2double(get(hObject,'String')) returns contents of volumeWmText as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function volumeWmText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to volumeWmText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in volumeWmButton.
+function volumeWmButton_Callback(hObject, eventdata, handles)
+% hObject    handle to volumeWmButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function volumeClassText_Callback(hObject, eventdata, handles)
+% hObject    handle to volumeClassText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of volumeClassText as text
+%        str2double(get(hObject,'String')) returns contents of volumeClassText as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function volumeClassText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to volumeClassText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in volumeClassButton.
+function volumeClassButton_Callback(hObject, eventdata, handles)
+% hObject    handle to volumeClassButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
