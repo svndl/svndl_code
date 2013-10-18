@@ -10,7 +10,7 @@ subjList = dir([ mrcProjDir filesep 'skeri*']);
 validSubj = ~strcmp('skeri0060',{subjList.name});
 subjList = subjList(validSubj);
 %Should I save figure files?
-writeOutput = true;
+writeOutput = false;
 
 %Using silly cell of cells structure because I'm lazy,
 
@@ -27,10 +27,10 @@ roiList = {...
     {'temporalpole-L.mat' 'temporalpole-R.mat'} ...    
     };
 
-roiList = {...
-    {'frontalpole-L.mat' 'frontalpole-R.mat'} ...    
-    };
-
+% roiList = {...
+%     {'frontalpole-L.mat' 'frontalpole-R.mat'} ...    
+%     };
+% 
 
 %This loop is going in the slow way. Should do all ROI's per subject. But
 %again. Lazy.

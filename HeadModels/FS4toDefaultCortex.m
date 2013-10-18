@@ -3,7 +3,7 @@ function FS4toDefaultCortex(FSsubjid,useMNEdec)
 % FS4toDefaultCortex(FS4subjid,false)  - uses Matlab's reducepatch
 
 if ~ispc
-	if strcmp(questdlg('Warning: MrMesh crashing on wocket.  Continue?','FS4toDefaultCortex.m','Yes','No','No'),'No')
+	if strcmp(questdlg('Warning: You are running a mac or Linux. MrMesh crashing on wocket.  Continue?','FS4toDefaultCortex.m','Yes','No','No'),'No')
 		return
 	end
 end

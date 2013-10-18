@@ -48,7 +48,7 @@ drawnow
 
 % SAVE
 
-subDir = getpref('freesurfer','SUBJECTS_DIR')
+subDir = getpref('freesurfer','SUBJECTS_DIR');
 
 triDir = fullfile(subDir,FSsubjid,'bem');
 % if ispc
